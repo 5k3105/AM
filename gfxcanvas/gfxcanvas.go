@@ -188,25 +188,34 @@ func (c *Canvas) RemoveRectangle(t gfxinterface.Figure) {
 	var target = t.(*rectangle.Rectangle)
 	c.RemoveEdges(target)
 
-	c.Scene.RemoveItem(target) // remove from scene
-	target.PrepareGeometryChange()
-	c.Figures.Remove(target.GetNode().Id) // remove from treemap
+	if target.Scene().Pointer() != nil {
+		target.SetVisible(false)
+		c.Scene.RemoveItem(target) // remove from scene
+		target.PrepareGeometryChange()
+		c.Figures.Remove(target.GetNode().Id) // remove from treemap
 
-	c.View.Viewport().Repaint()
+		c.View.Viewport().Repaint()
+	}
 }
 
 func (c *Canvas) RemoveEdges(r *rectangle.Rectangle) {
 
 	for _, f := range r.IncomingEdges.Values() {
 		l := f.(*line.Line)
-		c.Scene.RemoveItem(l) // remove from scene
-		l.PrepareGeometryChange()
+		if l.Scene().Pointer() != nil {
+			l.SetVisible(false)
+			c.Scene.RemoveItem(l) // remove from scene
+			l.PrepareGeometryChange()
+		}
 	}
 
 	for _, f := range r.OutgoingEdges.Values() {
 		l := f.(*line.Line)
-		c.Scene.RemoveItem(l) // remove from scene
-		l.PrepareGeometryChange()
+		if l.Scene().Pointer() != nil {
+			l.SetVisible(false)
+			c.Scene.RemoveItem(l) // remove from scene
+			l.PrepareGeometryChange()
+		}
 	}
 
 	r.IncomingEdges.Clear()
@@ -230,13 +239,15 @@ func (c *Canvas) AddLine(source gfxinterface.Figure, target gfxinterface.Figure)
 
 	c.Scene.AddItem(l)
 
-	c.Scene.RemoveItem(c.drawingline)
-	c.drawingline.PrepareGeometryChange()
-	c.drawingline = nil
-	c.drag = false
-	c.View.Viewport().Repaint()
-	//c.Scene.Update(c.Scene.SceneRect())
-
+	if c.drawingline.Scene().Pointer() != nil {
+		c.drawingline.SetVisible(false)
+		c.Scene.RemoveItem(c.drawingline)
+		c.drawingline.PrepareGeometryChange()
+		c.drawingline = nil
+		c.drag = false
+		c.View.Viewport().Repaint()
+		//c.Scene.Update(c.Scene.SceneRect())
+	}
 }
 
 func (c *Canvas) DrawLine(source gfxinterface.Figure, tx, ty float64) {
@@ -260,10 +271,13 @@ func (c *Canvas) keyPressEvent(e *gui.QKeyEvent) {
 
 	if e.Key() == int(core.Qt__Key_Escape) {
 		if c.drag {
-			c.Scene.RemoveItem(c.drawingline)
-			c.drawingline = nil
-			c.drag = false
-			c.View.Viewport().Repaint()
+			if c.drawingline.Scene().Pointer() != nil {
+				c.drawingline.SetVisible(false)
+				c.Scene.RemoveItem(c.drawingline)
+				c.drawingline = nil
+				c.drag = false
+				c.View.Viewport().Repaint()
+			}
 		}
 	}
 }
