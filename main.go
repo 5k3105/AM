@@ -34,7 +34,7 @@ func main() {
 
 	// Main Window
 	var window = widgets.NewQMainWindow(nil, 0)
-	window.SetWindowTitle("AOP Metadata") // Flight Data Metainfo
+	window.SetWindowTitle("---") 
 	//window.SetSurfaceType() opengl
 
 	// Main Widget
@@ -86,10 +86,8 @@ func main() {
 }
 
 func NewFsTree() *widgets.QTreeView {
-	//var drive string = "//AOP-SAMfs-01.eco.neoninternal.org"
-	//var drive string = "//eco.neoninternal.org/neon"
 
-	var drive string = "O:\\" // net use O: \\AOP-SAMfs-01.eco.neoninternal.org\AOP-L0-Archive /persistent:yes
+	var drive string = "O:\\" 
 
 	FsModel = widgets.NewQFileSystemModel(nil)
 	FsModel.SetRootPath(drive)
